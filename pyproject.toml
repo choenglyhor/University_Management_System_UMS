@@ -1,0 +1,6 @@
+[tool.pyright]
+extraPaths = ["backend"]
+reportMissingTypeStubs = false
+
+[tool.pyrefly]
+searchPaths = ["backend"]
