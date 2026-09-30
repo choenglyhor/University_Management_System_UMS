@@ -9,17 +9,17 @@ import { useLayout } from '../../context/LayoutContext';
  * 
  * Orchestrates:
  * 1. Accessibility: Skip-to-main-content landmark link for keyboard / screen-reader users
- * 2. Sticky Top Navbar with logo, search trigger, notifications, term, and profile
+ * 2. Sticky Top Navbar with logo, search trigger, notifications, term, theme, and profile
  * 3. Responsive Collapsible Sidebar (sliding drawer on mobile, icon-rail / expanded on desktop)
  * 4. Command Palette Search Modal (Ctrl/Cmd + K)
  * 5. Semantic `<main id="main-content">` Canvas with dynamic margin offset
- * 6. Standardized institutional footer
+ * 6. Dual Theme (Dark & Light) styling compliance
  */
 export const MainLayout = ({ children }) => {
   const { isDesktopCollapsed } = useLayout();
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-sky-500 selection:text-white">
+    <div className="min-h-screen bg-slate-100/70 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans selection:bg-sky-500 selection:text-white transition-colors duration-200">
       
       {/* WCAG AA: Accessible Skip to Content Link */}
       <a
@@ -55,14 +55,14 @@ export const MainLayout = ({ children }) => {
           </div>
 
           {/* Institutional Shell Footer */}
-          <footer className="mt-auto border-t border-slate-900 bg-slate-950/80 py-4 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+          <footer className="mt-auto border-t border-slate-200 dark:border-slate-900 bg-white/70 dark:bg-slate-950/80 py-4 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
               <p>
                 © 2026 Western University • Academic Management System (UMS/SIS Enterprise)
               </p>
               <div className="flex items-center gap-3 font-mono text-[11px]">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                   MSSQL Connected
                 </span>
                 <span>•</span>

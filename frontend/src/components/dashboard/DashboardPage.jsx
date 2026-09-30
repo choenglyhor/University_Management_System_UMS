@@ -25,15 +25,15 @@ import { useLayout, ROLES } from '../../context/LayoutContext';
  * 
  * Features:
  * - Dynamic Role-Adaptive KPI Metric Cards (Admin, Faculty, Student views)
- * - Interactive Role-Switcher Preview banner allowing real-time inspection
+ * - Interactive Role-Switcher Preview banner
  * - Actionable quick launchpad shortcuts
  * - Recent transaction / academic activity audit logs
  * - Institutional deadline timeline & MSSQL infrastructure heartbeat
+ * - Complete Light & Dark Mode responsive design
  */
-export const DashboardPage = ({ onNavigateToSection }) => {
+export const DashboardPage = () => {
   const { currentRole, setCurrentRole, currentProfile, academicTerm, setActiveNavId } = useLayout();
 
-  // Role-specific KPI metrics
   const getKpiCards = () => {
     switch (currentRole) {
       case ROLES.ADMIN:
@@ -146,7 +146,6 @@ export const DashboardPage = ({ onNavigateToSection }) => {
     }
   };
 
-  // Recent activity logs based on role
   const getRecentActivities = () => {
     switch (currentRole) {
       case ROLES.ADMIN:
@@ -248,26 +247,26 @@ export const DashboardPage = ({ onNavigateToSection }) => {
       />
 
       {/* ROLE-BASED UI VISIBILITY TOGGLE BANNER */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-sky-950/60 via-slate-900 to-indigo-950/60 border border-sky-500/30 shadow-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-sky-50 via-white to-indigo-50 dark:from-sky-950/60 dark:via-slate-900 dark:to-indigo-950/60 border border-sky-200 dark:border-sky-500/30 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/30">
+          <div className="p-2.5 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-500/30">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span>Interactive Role Previewer</span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30">
                 Live Simulation
               </span>
             </h2>
-            <p className="text-xs text-slate-400">
-              Toggle viewports and user permissions to test sidebar hierarchy, KPIs, and restricted operations.
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Toggle user roles to preview customized sidebar links, permission levels, and metric widgets.
             </p>
           </div>
         </div>
 
         {/* Role Toggle Button Group */}
-        <div className="flex items-center p-1 bg-slate-950/90 rounded-xl border border-slate-800 flex-shrink-0 self-start sm:self-auto">
+        <div className="flex items-center p-1 bg-white dark:bg-slate-950/90 rounded-xl border border-slate-200 dark:border-slate-800 flex-shrink-0 self-start sm:self-auto shadow-xs">
           {Object.values(ROLES).map((role) => (
             <button
               key={role}
@@ -276,7 +275,7 @@ export const DashboardPage = ({ onNavigateToSection }) => {
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 currentRole === role
                   ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900'
               }`}
             >
               {role}
@@ -292,21 +291,21 @@ export const DashboardPage = ({ onNavigateToSection }) => {
           return (
             <div
               key={idx}
-              className="bg-slate-900/80 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-5 shadow-sm transition-all flex flex-col justify-between group"
+              className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700/80 rounded-2xl p-5 shadow-xs transition-all flex flex-col justify-between group"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   {card.title}
                 </span>
                 <div
                   className={`p-2 rounded-xl ${
                     card.color === 'sky'
-                      ? 'bg-sky-500/10 text-sky-400'
+                      ? 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400'
                       : card.color === 'indigo'
-                      ? 'bg-indigo-500/10 text-indigo-400'
+                      ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
                       : card.color === 'emerald'
-                      ? 'bg-emerald-500/10 text-emerald-400'
-                      : 'bg-amber-500/10 text-amber-400'
+                      ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -314,16 +313,16 @@ export const DashboardPage = ({ onNavigateToSection }) => {
               </div>
 
               <div className="mt-4">
-                <div className="text-2xl font-extrabold text-white tracking-tight">
+                <div className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                   {card.value}
                 </div>
                 <div className="flex items-center gap-1.5 mt-1 text-xs">
                   {card.isPositive ? (
-                    <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
+                    <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   ) : (
-                    <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                   )}
-                  <span className={card.isPositive ? 'text-emerald-400' : 'text-amber-400'}>
+                  <span className={card.isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}>
                     {card.trend}
                   </span>
                 </div>
@@ -334,13 +333,13 @@ export const DashboardPage = ({ onNavigateToSection }) => {
       </div>
 
       {/* QUICK LAUNCHPAD ACTIONS */}
-      <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 shadow-sm">
+      <div className="bg-white dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
             <span>Fast Action Launchpad</span>
-            <span className="text-[10px] font-mono text-sky-400">({currentRole} Scope)</span>
+            <span className="text-[10px] font-mono text-sky-600 dark:text-sky-400">({currentRole} Scope)</span>
           </h2>
-          <span className="text-xs text-slate-400">Frequently used institutional modules</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Frequently used institutional modules</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
@@ -349,38 +348,38 @@ export const DashboardPage = ({ onNavigateToSection }) => {
               <button
                 type="button"
                 onClick={() => setActiveNavId('gradebook')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <FileSpreadsheet className="w-5 h-5 text-sky-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Review Gradebook</div>
-                <div className="text-[11px] text-slate-400">Verify assessment matrices</div>
+                <FileSpreadsheet className="w-5 h-5 text-sky-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Review Gradebook</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Verify assessment matrices</div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveNavId('course-registration')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <GraduationCap className="w-5 h-5 text-indigo-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Course Catalog</div>
-                <div className="text-[11px] text-slate-400">Inspect waitlists & seats</div>
+                <GraduationCap className="w-5 h-5 text-indigo-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Course Catalog</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Inspect waitlists & seats</div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveNavId('student-records')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <Users className="w-5 h-5 text-emerald-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Student Records</div>
-                <div className="text-[11px] text-slate-400">GPA and transcript verification</div>
+                <Users className="w-5 h-5 text-emerald-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Student Records</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">GPA & transcript audits</div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveNavId('system-settings')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <Server className="w-5 h-5 text-amber-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">MSSQL High Availability</div>
-                <div className="text-[11px] text-slate-400">Replication & lock monitor</div>
+                <Server className="w-5 h-5 text-amber-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">MSSQL High Availability</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Replication & lock monitor</div>
               </button>
             </>
           )}
@@ -390,38 +389,38 @@ export const DashboardPage = ({ onNavigateToSection }) => {
               <button
                 type="button"
                 onClick={() => setActiveNavId('gradebook')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <FileSpreadsheet className="w-5 h-5 text-sky-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Enter Grades (CS101)</div>
-                <div className="text-[11px] text-slate-400">Continuous matrix assessment</div>
+                <FileSpreadsheet className="w-5 h-5 text-sky-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Enter Grades (CS101)</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Continuous matrix assessment</div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveNavId('academic-programs')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <BookOpen className="w-5 h-5 text-indigo-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Syllabus Management</div>
-                <div className="text-[11px] text-slate-400">Update curriculum weights</div>
+                <BookOpen className="w-5 h-5 text-indigo-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Syllabus Management</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Update curriculum weights</div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveNavId('student-records')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <Users className="w-5 h-5 text-emerald-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Advisee Roster</div>
-                <div className="text-[11px] text-slate-400">Check academic standing</div>
+                <Users className="w-5 h-5 text-emerald-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Advisee Roster</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Check academic standing</div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveNavId('course-registration')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <GraduationCap className="w-5 h-5 text-amber-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Department Catalog</div>
-                <div className="text-[11px] text-slate-400">Browse prerequisites tree</div>
+                <GraduationCap className="w-5 h-5 text-amber-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Department Catalog</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Browse prerequisites tree</div>
               </button>
             </>
           )}
@@ -431,38 +430,38 @@ export const DashboardPage = ({ onNavigateToSection }) => {
               <button
                 type="button"
                 onClick={() => setActiveNavId('student-records')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <GraduationCap className="w-5 h-5 text-sky-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">My Academic Portal</div>
-                <div className="text-[11px] text-slate-400">Check GPA & transcripts</div>
+                <GraduationCap className="w-5 h-5 text-sky-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">My Academic Portal</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Check GPA & transcripts</div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveNavId('course-registration')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <BookOpen className="w-5 h-5 text-emerald-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Course Registration</div>
-                <div className="text-[11px] text-slate-400">Enroll or drop sections</div>
+                <BookOpen className="w-5 h-5 text-emerald-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Course Registration</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Enroll or drop sections</div>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveNavId('financial-ledger')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <CreditCard className="w-5 h-5 text-amber-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Tuition & Fees</div>
-                <div className="text-[11px] text-slate-400">View statement & receipts</div>
+                <CreditCard className="w-5 h-5 text-amber-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Tuition & Fees</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">View statement & receipts</div>
               </button>
               <button
                 type="button"
                 onClick={() => alert('Generating unofficial transcript PDF...')}
-                className="p-3 rounded-xl bg-slate-950/70 hover:bg-slate-800 border border-slate-800 text-left transition-all group"
+                className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-left transition-all group"
               >
-                <ArrowUpRight className="w-5 h-5 text-purple-400 mb-2 group-hover:scale-110 transition-transform" />
-                <div className="text-xs font-bold text-white">Download Transcript</div>
-                <div className="text-[11px] text-slate-400">Official institutional seal</div>
+                <ArrowUpRight className="w-5 h-5 text-purple-500 mb-2 group-hover:scale-110 transition-transform" />
+                <div className="text-xs font-bold text-slate-900 dark:text-white">Download Transcript</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Official institutional seal</div>
               </button>
             </>
           )}
@@ -472,13 +471,13 @@ export const DashboardPage = ({ onNavigateToSection }) => {
       {/* TWO-COLUMN DETAILS GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column (2 Cols wide on desktop): Recent Activity & Audit Trail */}
-        <div className="lg:col-span-2 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <h3 className="text-sm font-bold text-white">Recent System Activity & Audit Trail</h3>
-              <p className="text-xs text-slate-400">Real-time event logging synchronized with MSSQL engine</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Recent System Activity & Audit Trail</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Real-time event logging synchronized with MSSQL engine</p>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
               Auto-refresh 30s
             </span>
           </div>
@@ -487,19 +486,19 @@ export const DashboardPage = ({ onNavigateToSection }) => {
             {activities.map((act) => (
               <div
                 key={act.id}
-                className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 flex items-start gap-3 transition-colors"
+                className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700 flex items-start gap-3 transition-colors"
               >
                 <div className="pt-0.5">
-                  {act.status === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
-                  {act.status === 'warning' && <AlertCircle className="w-4 h-4 text-amber-400" />}
-                  {act.status === 'info' && <Clock className="w-4 h-4 text-sky-400" />}
+                  {act.status === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                  {act.status === 'warning' && <AlertCircle className="w-4 h-4 text-amber-500" />}
+                  {act.status === 'info' && <Clock className="w-4 h-4 text-sky-500" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-xs font-bold text-white">{act.title}</h4>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">{act.title}</h4>
                     <span className="text-[10px] font-mono text-slate-400 flex-shrink-0">{act.time}</span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{act.description}</p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed">{act.description}</p>
                 </div>
               </div>
             ))}
@@ -508,41 +507,41 @@ export const DashboardPage = ({ onNavigateToSection }) => {
 
         {/* Right Column: Deadlines & Institutional Timeline */}
         <div className="space-y-4">
-          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-sky-400" />
+          <div className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-sky-500" />
                 <span>Term Deadlines ({academicTerm})</span>
               </h3>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-                <div className="flex items-center justify-between text-amber-400 font-bold">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between text-amber-600 dark:text-amber-400 font-bold">
                   <span>Midterm Grade Entry</span>
                   <span className="font-mono text-[10px]">Oct 15, 2026</span>
                 </div>
-                <p className="text-slate-400 text-[11px] mt-1">
+                <p className="text-slate-600 dark:text-slate-400 text-[11px] mt-1">
                   Faculty assessment locks engage at midnight.
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-                <div className="flex items-center justify-between text-sky-400 font-bold">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between text-sky-600 dark:text-sky-400 font-bold">
                   <span>Course Withdrawal Deadline</span>
                   <span className="font-mono text-[10px]">Nov 01, 2026</span>
                 </div>
-                <p className="text-slate-400 text-[11px] mt-1">
+                <p className="text-slate-600 dark:text-slate-400 text-[11px] mt-1">
                   Last day to withdraw without academic penalty ('W' grade).
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-                <div className="flex items-center justify-between text-emerald-400 font-bold">
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
+                <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400 font-bold">
                   <span>Spring 2027 Registration</span>
                   <span className="font-mono text-[10px]">Nov 20, 2026</span>
                 </div>
-                <p className="text-slate-400 text-[11px] mt-1">
+                <p className="text-slate-600 dark:text-slate-400 text-[11px] mt-1">
                   Senior priority enrollment begins at 08:00 EST.
                 </p>
               </div>
@@ -550,26 +549,26 @@ export const DashboardPage = ({ onNavigateToSection }) => {
           </div>
 
           {/* Engine Architecture Card */}
-          <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-sm text-xs font-mono space-y-2">
-            <div className="flex items-center justify-between text-slate-300 font-bold">
+          <div className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-xs text-xs font-mono space-y-2">
+            <div className="flex items-center justify-between text-slate-800 dark:text-slate-300 font-bold">
               <span className="flex items-center gap-1.5">
-                <Server className="w-3.5 h-3.5 text-sky-400" />
+                <Server className="w-3.5 h-3.5 text-sky-500" />
                 <span>Database Engine</span>
               </span>
-              <span className="text-emerald-400 text-[11px]">MSSQL 2022</span>
+              <span className="text-emerald-600 dark:text-emerald-400 text-[11px]">MSSQL 2022</span>
             </div>
-            <div className="text-[11px] text-slate-400 space-y-1 pt-1 border-t border-slate-800">
+            <div className="text-[11px] text-slate-600 dark:text-slate-400 space-y-1 pt-1 border-t border-slate-200 dark:border-slate-800">
               <div className="flex justify-between">
                 <span>Concurrency Lock:</span>
-                <span className="text-slate-300">T-SQL UPDLOCK</span>
+                <span className="text-slate-800 dark:text-slate-300 font-semibold">T-SQL UPDLOCK</span>
               </div>
               <div className="flex justify-between">
                 <span>Transaction Isolation:</span>
-                <span className="text-slate-300">READ COMMITTED SNAPSHOT</span>
+                <span className="text-slate-800 dark:text-slate-300 font-semibold">SNAPSHOT ISOLATION</span>
               </div>
               <div className="flex justify-between">
                 <span>Replication Status:</span>
-                <span className="text-emerald-400">Synchronized (0 lag)</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Synchronized (0 lag)</span>
               </div>
             </div>
           </div>

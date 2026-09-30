@@ -27,9 +27,9 @@ import { useLayout, ROLES } from '../../context/LayoutContext';
  * 
  * Features:
  * - Semantic HTML5 `<aside role="navigation">`
- * - Grouped navigation categories (Overview, Academics, Records & Finance, Administration)
+ * - Grouped navigation categories (Core Operations, Academics, Records & Finance, Administration)
  * - Accordion Sub-menus with smooth collapse/expand
- * - Active-state visual indicator with WCAG AA compliant contrast
+ * - Active-state visual indicator with WCAG AA compliant contrast in both Light and Dark themes
  * - Role-Based filtering (Admin, Faculty, Student view adaptations)
  * - Responsive behavior:
  *    * Desktop (>= 1024px): Expands (260px) or Collapses into icon rail (72px)
@@ -171,7 +171,7 @@ export const Sidebar = () => {
     },
   ];
 
-  // Filter groups and items strictly according to the active role
+  // Filter groups and items according to the active role
   const filteredNavGroups = navGroups
     .map((group) => ({
       ...group,
@@ -187,7 +187,6 @@ export const Sidebar = () => {
     } else {
       setActiveSubNavId(null);
     }
-    // Close mobile drawer upon navigation
     if (window.innerWidth < 1024) {
       setIsMobileSidebarOpen(false);
     }
@@ -207,7 +206,7 @@ export const Sidebar = () => {
       {/* Mobile Sliding Drawer Backdrop Overlay */}
       {isMobileSidebarOpen && (
         <div
-          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
           onClick={() => setIsMobileSidebarOpen(false)}
           aria-hidden="true"
         />
@@ -217,15 +216,9 @@ export const Sidebar = () => {
       <aside
         role="navigation"
         aria-label="Main Institutional Navigation"
-        className={`fixed top-16 bottom-0 left-0 z-40 bg-slate-900 border-r border-slate-800 transition-all duration-300 ease-in-out flex flex-col justify-between
-          ${
-            /* Mobile drawer transform logic */
-            isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-          }
-          ${
-            /* Desktop collapse width logic */
-            isDesktopCollapsed ? 'w-20' : 'w-64'
-          }
+        className={`fixed top-16 bottom-0 left-0 z-40 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 ease-in-out flex flex-col justify-between
+          ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          ${isDesktopCollapsed ? 'w-20' : 'w-64'}
         `}
       >
         {/* Navigation Content Area */}
@@ -233,32 +226,30 @@ export const Sidebar = () => {
           
           {/* Active Role Quick Banner inside Sidebar */}
           {!isDesktopCollapsed && (
-            <div className="px-3 py-2.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+            <div className="px-3 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-sky-400"></span>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
+                <span className="w-2 h-2 rounded-full bg-sky-500"></span>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Role Scope:
                 </span>
               </div>
-              <span className="text-xs font-bold text-sky-400 px-2 py-0.5 rounded bg-sky-500/10 border border-sky-500/20 font-mono">
+              <span className="text-xs font-bold text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded bg-sky-50 dark:bg-sky-500/10 border border-sky-200 dark:border-sky-500/20 font-mono">
                 {currentRole}
               </span>
             </div>
           )}
 
           {/* Grouped Navigation Links */}
-          {filteredNavGroups.map((group, groupIdx) => (
+          {filteredNavGroups.map((group) => (
             <div key={group.groupTitle} className="space-y-1.5">
-              {/* Group Title (hidden when desktop sidebar is collapsed) */}
               {!isDesktopCollapsed ? (
-                <div className="px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                <div className="px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
                   {group.groupTitle}
                 </div>
               ) : (
-                <div className="h-2 border-b border-slate-800/80 mx-2" />
+                <div className="h-2 border-b border-slate-200 dark:border-slate-800/80 mx-2" />
               )}
 
-              {/* Items in this group */}
               <div className="space-y-1">
                 {group.items.map((item) => {
                   const Icon = item.icon;
@@ -277,8 +268,8 @@ export const Sidebar = () => {
                         title={isDesktopCollapsed ? item.title : undefined}
                         className={`w-full group flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all relative ${
                           isActive
-                            ? 'bg-sky-600/15 text-white border border-sky-500/30 shadow-sm'
-                            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent'
+                            ? 'bg-sky-50 dark:bg-sky-600/15 text-sky-700 dark:text-white border border-sky-200 dark:border-sky-500/30 shadow-xs'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60 border border-transparent'
                         }`}
                       >
                         {/* Active Left Glow Accent Bar */}
@@ -289,7 +280,7 @@ export const Sidebar = () => {
                         <div className="flex items-center gap-3 min-w-0">
                           <Icon
                             className={`w-5 h-5 flex-shrink-0 transition-colors ${
-                              isActive ? 'text-sky-400' : 'text-slate-400 group-hover:text-slate-200'
+                              isActive ? 'text-sky-600 dark:text-sky-400' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200'
                             }`}
                           />
                           {!isDesktopCollapsed && (
@@ -304,8 +295,8 @@ export const Sidebar = () => {
                               <span
                                 className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
                                   item.badgeColor === 'emerald'
-                                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                                    : 'bg-sky-500/15 text-sky-400 border border-sky-500/30'
+                                    ? 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30'
+                                    : 'bg-sky-50 dark:bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-500/30'
                                 }`}
                               >
                                 {item.badge}
@@ -317,7 +308,7 @@ export const Sidebar = () => {
                                   e.stopPropagation();
                                   toggleSubmenu(item.id);
                                 }}
-                                className="p-0.5 hover:text-white rounded"
+                                className="p-0.5 hover:text-slate-900 dark:hover:text-white rounded"
                               >
                                 {isExpanded ? (
                                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
@@ -330,9 +321,9 @@ export const Sidebar = () => {
                         )}
                       </button>
 
-                      {/* Sub-menu tree (collapses on desktop collapse mode) */}
+                      {/* Sub-menu tree */}
                       {!isDesktopCollapsed && hasSubmenu && isExpanded && (
-                        <div className="ml-5 pl-3 mt-1 space-y-1 border-l-2 border-slate-800/80 animate-fade-in">
+                        <div className="ml-5 pl-3 mt-1 space-y-1 border-l-2 border-slate-200 dark:border-slate-800/80 animate-fade-in">
                           {item.subItems.map((sub) => {
                             const isSubActive = isActive && activeSubNavId === sub.id;
                             return (
@@ -342,13 +333,13 @@ export const Sidebar = () => {
                                 onClick={(e) => handleSubItemClick(e, item, sub)}
                                 className={`w-full flex items-center justify-between text-left py-1.5 px-2.5 rounded-lg text-[11px] transition-all ${
                                   isSubActive
-                                    ? 'bg-sky-500/20 text-sky-300 font-semibold border-l-2 border-sky-400'
-                                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                                    ? 'bg-sky-100 dark:bg-sky-500/20 text-sky-800 dark:text-sky-300 font-semibold border-l-2 border-sky-500 dark:border-sky-400'
+                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/40'
                                 }`}
                               >
                                 <span className="truncate">{sub.label}</span>
                                 {isSubActive && (
-                                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                                  <span className="w-1.5 h-1.5 rounded-full bg-sky-500 dark:bg-sky-400"></span>
                                 )}
                               </button>
                             );
@@ -365,18 +356,17 @@ export const Sidebar = () => {
         </div>
 
         {/* Sidebar Footer Area: System status & Desktop Collapse Toggle */}
-        <div className="p-3 border-t border-slate-800 bg-slate-950/70 space-y-2">
-          {/* MSSQL Engine Status indicator (hidden when desktop collapsed) */}
+        <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/70 space-y-2">
           {!isDesktopCollapsed && (
-            <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-400 flex items-center justify-between">
+            <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] font-mono text-slate-600 dark:text-slate-400 flex items-center justify-between">
               <div className="flex items-center gap-2 truncate">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span className="truncate text-slate-300">MSSQL 2022</span>
+                <span className="truncate text-slate-800 dark:text-slate-300">MSSQL 2022</span>
               </div>
-              <span className="text-[10px] text-emerald-400 font-bold">ONLINE</span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">ONLINE</span>
             </div>
           )}
 
@@ -385,10 +375,10 @@ export const Sidebar = () => {
             type="button"
             onClick={toggleDesktopSidebar}
             aria-label={isDesktopCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            className="w-full hidden lg:flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 text-xs font-medium border border-transparent hover:border-slate-700 transition-all"
+            className="w-full hidden lg:flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800 text-xs font-medium border border-transparent hover:border-slate-300 dark:hover:border-slate-700 transition-all"
           >
             {isDesktopCollapsed ? (
-              <ChevronRightIcon className="w-4 h-4 text-sky-400" />
+              <ChevronRightIcon className="w-4 h-4 text-sky-500" />
             ) : (
               <>
                 <ChevronLeft className="w-4 h-4 text-slate-400" />
