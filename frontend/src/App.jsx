@@ -10,14 +10,54 @@ import {
   Sparkles,
   Server,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  Search
 } from 'lucide-react';
+import { LayoutProvider, useLayout, ROLES } from './context/LayoutContext';
+import { MainLayout } from './components/layout/MainLayout';
+import { PageHeader } from './components/layout/PageHeader';
+import { DashboardPage } from './components/dashboard/DashboardPage';
 import { FacultyGradebookMatrix } from './components/FacultyGradebookMatrix';
 import { StudentAcademicPortal } from './components/StudentAcademicPortal';
+import { AcademicProgramsView } from './components/views/AcademicProgramsView';
+import { FinancialLedgerView } from './components/views/FinancialLedgerView';
+import { SystemSettingsView } from './components/views/SystemSettingsView';
 import { apiClient } from './api/client';
 
-export const App = () => {
-  const [activeView, setActiveView] = useState('faculty');
+/**
+ * Enterprise University Management System (UMS) / SIS
+ * 
+ * CORE ARCHITECTURE OVERVIEW:
+ * 1. State Management:
+ *    - Layout & UI State (Sidebar toggle, Role preview switcher, Command palette search,
+ *      Academic Term, Unread Notifications) is encapsulated within LayoutContext.jsx.
+ *    - Domain/Academic Data State (Course catalog, Student records, Roster & Gradebook matrices)
+ *      is maintained at the application root level and passed into sub-components.
+ * 
+ * 2. Role-Based Access Control (RBAC) Simulation:
+ *    - Supports live previewing as 'Admin', 'Faculty', or 'Student'.
+ *    - Navigation tree, dashboard KPI metrics, and action permissions adapt instantly.
+ *    - Graceful route-guarding automatically redirects if a switched role lacks clearance.
+ * 
+ * 3. Responsive Adaptations:
+ *    - Mobile/Tablet (< 1024px): Left navigation becomes an off-canvas drawer with backdrop.
+ *    - Desktop (>= 1024px): Left navigation supports full-width (260px) and collapsed rail (72px).
+ * 
+ * 4. Keyboard & Accessibility (WCAG AA):
+ *    - Global Command Palette activated via Ctrl+K / Cmd+K.
+ *    - Skip-to-content landmark link for keyboard users.
+ *    - Semantic HTML5 structure (<header>, <aside>, <nav>, <main>, <footer>).
+ */
+
+const AppContent = () => {
+  const {
+    activeNavId,
+    setActiveNavId,
+    currentRole,
+    academicTerm,
+  } = useLayout();
+
+  // Academic Domain State
   const [sections, setSections] = useState([]);
   const [selectedSectionId, setSelectedSectionId] = useState('sec-cs101-001');
   const [loading, setLoading] = useState(false);
@@ -51,7 +91,21 @@ export const App = () => {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Load initial sections & catalog
+  // RBAC Route Guard: Automatically redirect to Dashboard if current role lacks access
+  useEffect(() => {
+    const roleRoutes = {
+      [ROLES.STUDENT]: ['dashboard', 'course-registration', 'student-records', 'financial-ledger'],
+      [ROLES.FACULTY]: ['dashboard', 'academic-programs', 'gradebook', 'student-records'],
+      [ROLES.ADMIN]: ['dashboard', 'academic-programs', 'course-registration', 'gradebook', 'student-records', 'financial-ledger', 'system-settings'],
+    };
+
+    const allowed = roleRoutes[currentRole] || [];
+    if (allowed.length > 0 && !allowed.includes(activeNavId)) {
+      setActiveNavId('dashboard');
+    }
+  }, [currentRole, activeNavId, setActiveNavId]);
+
+  // Load initial sections & catalog data
   useEffect(() => {
     const init = async () => {
       setLoading(true);
@@ -180,62 +234,8 @@ export const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Banner & Header */}
-      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
-              <GraduationCap className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="font-extrabold text-base tracking-tight text-white flex items-center gap-2">
-                Western University <span className="text-xs px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 font-mono border border-sky-500/20">Portal 2026</span>
-              </span>
-              <p className="text-xs text-slate-400 hidden sm:block">Academic Management & Continuous Assessment Engine</p>
-            </div>
-          </div>
-
-          {/* Role Navigation Bar */}
-          <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-slate-800">
-            <button
-              onClick={() => setActiveView('faculty')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                activeView === 'faculty'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Faculty Gradebook</span>
-            </button>
-            <button
-              onClick={() => setActiveView('student')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                activeView === 'student'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-              }`}
-            >
-              <GraduationCap className="w-3.5 h-3.5" />
-              <span>Student Portal</span>
-            </button>
-            <button
-              onClick={() => setActiveView('catalog')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                activeView === 'catalog'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-              }`}
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Course Catalog</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Toast Notification */}
+    <>
+      {/* Toast Notification Alert */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 max-w-md bg-slate-900 border border-emerald-500/40 text-emerald-300 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">
           <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
@@ -243,64 +243,165 @@ export const App = () => {
         </div>
       )}
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* VIEW 1: FACULTY GRADEBOOK MATRIX */}
-        {activeView === 'faculty' && (
-          <div className="space-y-6">
-            {/* Section Switcher Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Select Section:</span>
-                <div className="flex gap-2">
-                  {sections.map(sec => (
+      {/* VIEW DISPATCHER */}
+      {/* 1. DASHBOARD VIEW */}
+      {activeNavId === 'dashboard' && <DashboardPage />}
+
+      {/* 2. ACADEMIC PROGRAMS VIEW */}
+      {activeNavId === 'academic-programs' && <AcademicProgramsView />}
+
+      {/* 3. COURSE REGISTRATION & CATALOG VIEW */}
+      {activeNavId === 'course-registration' && (
+        <div className="space-y-6">
+          <PageHeader
+            title="Course Catalog & Registration Engine"
+            subtitle="Enforces institutional prerequisite DAG verification and atomic concurrency seat locking via T-SQL UPDLOCK."
+            onExportCsv={() => alert('Exporting course catalog to CSV...')}
+            onAddNew={currentRole === ROLES.ADMIN ? () => alert('Adding new course section to schedule...') : null}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {courses.map(course => {
+              const isRegistered = enrolledCourseCodes.includes(course.course_code);
+              const hasPrereq = course.prerequisites && course.prerequisites.length > 0;
+
+              return (
+                <div
+                  key={course.course_id}
+                  className="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4 transition-all"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <span className="text-xs font-mono font-bold text-sky-400 bg-sky-500/10 px-2.5 py-0.5 rounded border border-sky-500/20">
+                          {course.course_code}
+                        </span>
+                        <span className="text-xs text-slate-400 ml-2 font-mono">
+                          Dept: {course.department_code}
+                        </span>
+                      </div>
+                      <span className="text-xs font-semibold px-2 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">
+                        {course.credits} Credits
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-white">{course.title}</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">{course.description}</p>
+
+                    {/* Prerequisites Pill */}
+                    {hasPrereq ? (
+                      <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs space-y-1">
+                        <span className="font-semibold text-slate-400 uppercase text-[10px] tracking-wider">Required Prerequisites:</span>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {course.prerequisites.map(p => (
+                            <span
+                              key={p.prerequisite_course_code}
+                              className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 font-mono text-[11px]"
+                            >
+                              {p.prerequisite_course_code} (Min GPA {p.min_grade_points})
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> No prerequisite barriers required
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                    <span className="text-xs font-mono text-slate-400">
+                      Status: <strong className={isRegistered ? 'text-emerald-400' : 'text-slate-300'}>{isRegistered ? 'Enrolled' : 'Open'}</strong>
+                    </span>
                     <button
-                      key={sec.section_id}
-                      onClick={() => setSelectedSectionId(sec.section_id)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-                        selectedSectionId === sec.section_id
-                          ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20'
-                          : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
+                      onClick={() => handleEnrollCourse(course.course_code)}
+                      className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+                        isRegistered
+                          ? 'bg-rose-500/10 text-rose-300 border border-rose-500/20 hover:bg-rose-500/20'
+                          : 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/30'
                       }`}
                     >
-                      {sec.course_code}-{sec.section_number}
+                      {isRegistered ? 'Drop Course' : 'Register Section'}
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </button>
-                  ))}
+                  </div>
                 </div>
-              </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
-              <div className="flex items-center gap-4 text-xs font-mono text-slate-400">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  MSSQL Server 2022 Connected
-                </span>
-                <span className="hidden sm:inline">•</span>
-                <span className="hidden sm:inline">Engine: T-SQL UPDLOCK Engine</span>
+      {/* 4. FACULTY GRADEBOOK MATRIX VIEW */}
+      {activeNavId === 'gradebook' && (
+        <div className="space-y-6">
+          <PageHeader
+            title="Faculty Gradebook & Assessment Matrix"
+            subtitle="Continuous assessment weighting, real-time recalculation, and official registrar grade publishing."
+            onExportCsv={() => alert('Exporting section gradebook matrix to CSV...')}
+            onAddNew={() => alert('Adding new assessment item to syllabus...')}
+          />
+
+          {/* Section Switcher Toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Select Section:</span>
+              <div className="flex gap-2">
+                {sections.map(sec => (
+                  <button
+                    key={sec.section_id}
+                    onClick={() => setSelectedSectionId(sec.section_id)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                      selectedSectionId === sec.section_id
+                        ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20'
+                        : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
+                    }`}
+                  >
+                    {sec.course_code}-{sec.section_number}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Matrix Component */}
-            {gradebookData.assessments.length > 0 ? (
-              <FacultyGradebookMatrix
-                sectionId={selectedSectionId}
-                courseCode={gradebookData.courseCode}
-                sectionNumber={gradebookData.sectionNumber}
-                initialAssessments={gradebookData.assessments}
-                initialStudents={gradebookData.students}
-                onSaveBatch={handleSaveBatch}
-                onPublishFinal={handlePublishFinal}
-              />
-            ) : (
-              <div className="p-12 text-center bg-slate-900 border border-slate-800 rounded-xl">
-                <RefreshCw className="w-6 h-6 animate-spin mx-auto text-sky-400 mb-3" />
-                <p className="text-sm text-slate-400">Loading roster & assessment syllabus...</p>
-              </div>
-            )}
+            <div className="flex items-center gap-4 text-xs font-mono text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                MSSQL Server 2022 Connected
+              </span>
+              <span className="hidden sm:inline">•</span>
+              <span className="hidden sm:inline">Engine: T-SQL UPDLOCK Engine</span>
+            </div>
           </div>
-        )}
 
-        {/* VIEW 2: STUDENT ACADEMIC PORTAL */}
-        {activeView === 'student' && (
+          {/* Matrix Component */}
+          {gradebookData.assessments.length > 0 ? (
+            <FacultyGradebookMatrix
+              sectionId={selectedSectionId}
+              courseCode={gradebookData.courseCode}
+              sectionNumber={gradebookData.sectionNumber}
+              initialAssessments={gradebookData.assessments}
+              initialStudents={gradebookData.students}
+              onSaveBatch={handleSaveBatch}
+              onPublishFinal={handlePublishFinal}
+            />
+          ) : (
+            <div className="p-12 text-center bg-slate-900 border border-slate-800 rounded-xl">
+              <RefreshCw className="w-6 h-6 animate-spin mx-auto text-sky-400 mb-3" />
+              <p className="text-sm text-slate-400">Loading roster & assessment syllabus...</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* 5. STUDENT ACADEMIC RECORDS & PORTAL VIEW */}
+      {activeNavId === 'student-records' && (
+        <div className="space-y-6">
+          <PageHeader
+            title="Student Academic Portal & Transcripts"
+            subtitle="Verified academic standing, GPA audit records, continuous term progress, and prerequisite pathways."
+            onExportCsv={() => alert('Downloading official transcript summary...')}
+          />
           <StudentAcademicPortal
             studentName={studentData.studentName}
             studentNumber={studentData.studentNumber}
@@ -310,97 +411,25 @@ export const App = () => {
             transcriptTerms={studentData.transcriptTerms}
             prerequisiteTree={studentData.prerequisiteTree}
           />
-        )}
+        </div>
+      )}
 
-        {/* VIEW 3: COURSE CATALOG & WAITLIST REGISTRATION */}
-        {activeView === 'catalog' && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-extrabold text-white">Course Catalog & Prerequisite Engine</h2>
-              <p className="text-xs text-slate-400 mt-1">
-                Enforces strict institutional prerequisite DAG verification and atomic concurrency seat locking.
-              </p>
-            </div>
+      {/* 6. FINANCIAL LEDGER VIEW */}
+      {activeNavId === 'financial-ledger' && <FinancialLedgerView />}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {courses.map(course => {
-                const isRegistered = enrolledCourseCodes.includes(course.course_code);
-                const hasPrereq = course.prerequisites && course.prerequisites.length > 0;
+      {/* 7. SYSTEM SETTINGS VIEW */}
+      {activeNavId === 'system-settings' && <SystemSettingsView />}
+    </>
+  );
+};
 
-                return (
-                  <div
-                    key={course.course_id}
-                    className="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-4 transition-all"
-                  >
-                    <div className="space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <span className="text-xs font-mono font-bold text-sky-400 bg-sky-500/10 px-2.5 py-0.5 rounded border border-sky-500/20">
-                            {course.course_code}
-                          </span>
-                          <span className="text-xs text-slate-400 ml-2 font-mono">
-                            Dept: {course.department_code}
-                          </span>
-                        </div>
-                        <span className="text-xs font-semibold px-2 py-1 rounded bg-slate-950 border border-slate-800 text-slate-300">
-                          {course.credits} Credits
-                        </span>
-                      </div>
-
-                      <h3 className="text-lg font-bold text-white">{course.title}</h3>
-                      <p className="text-xs text-slate-400 leading-relaxed">{course.description}</p>
-
-                      {/* Prerequisites Pill */}
-                      {hasPrereq ? (
-                        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs space-y-1">
-                          <span className="font-semibold text-slate-400 uppercase text-[10px] tracking-wider">Required Prerequisites:</span>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {course.prerequisites.map(p => (
-                              <span
-                                key={p.prerequisite_course_code}
-                                className="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 font-mono text-[11px]"
-                              >
-                                {p.prerequisite_course_code} (Min GPA {p.min_grade_points})
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5" /> No prerequisite barriers required
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                      <span className="text-xs font-mono text-slate-400">
-                        Status: <strong className={isRegistered ? 'text-emerald-400' : 'text-slate-300'}>{isRegistered ? 'Enrolled' : 'Open'}</strong>
-                      </span>
-                      <button
-                        onClick={() => handleEnrollCourse(course.course_code)}
-                        className={`px-4 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
-                          isRegistered
-                            ? 'bg-rose-500/10 text-rose-300 border border-rose-500/20 hover:bg-rose-500/20'
-                            : 'bg-sky-600 hover:bg-sky-500 text-white shadow-lg shadow-sky-600/30'
-                        }`}
-                      >
-                        {isRegistered ? 'Drop Course' : 'Register Section'}
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-6 bg-slate-950 text-center text-xs text-slate-500">
-        <p>Western University Academic Information System • Built with ReactJS (.jsx) & TailwindCSS</p>
-      </footer>
-    </div>
+export const App = () => {
+  return (
+    <LayoutProvider>
+      <MainLayout>
+        <AppContent />
+      </MainLayout>
+    </LayoutProvider>
   );
 };
 

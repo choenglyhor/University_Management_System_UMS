@@ -98,3 +98,4 @@ npm run dev
    - **Frontend App:** [http://localhost:5173](http://localhost:5173)
    - **Backend API:** [http://localhost:8000/api/v1/](http://localhost:8000/api/v1/)
    - **SQL Server:** `localhost:1433` (User: `sa`)
+# University_Management_System_UMS
